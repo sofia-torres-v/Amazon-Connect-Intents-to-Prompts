@@ -1,30 +1,75 @@
+# De intents a prompts: agendamiento de citas médicas con Amazon Connect
 
-# Citas Médicas - AI Agent
+> Proyecto presentado en la charla «De intents a prompts: construyendo agentes con Amazon Connect», en AWS Community Day Perú 2026 (3 de octubre de 2026, Salón Colaboratorio, Lima), por Sofía Torres y Yahaira Pérez.
 
-Asistente agéntico de citas médicas con Amazon Connect y Amazon Q in Connect. Utiliza prompts y tools para razonar, decidir acciones y ejecutar operaciones mediante AWS Lambda y DynamoDB.
+**Idea central:** la transición de bots basados en intents y slots hacia agentes que razonan con prompts y usan herramientas. El mismo caso de uso, resuelto de dos formas: con Amazon Lex V2 y con Amazon Q in Connect.
 
-> Proyecto presentado en **ComuniAWS Day 2026** como parte de la charla «De intents a prompts: construyendo agentes con Amazon Connect».
-
-**Idea central:** la transición de bots basados en intents y slots hacia AI Agents y tools para la gestión de citas médicas.
-
-## Arquitectura del sistema
-
-El proyecto implementa un asistente conversacional con servicios serverless de AWS:
-
-- **Amazon Connect** para la experiencia conversacional.
-- **Amazon Lex V2** como puente hacia el AI Agent.
-- **Amazon Q in Connect** para el razonamiento del agente.
-- **Flow Module** como herramienta (Tool) del agente.
-- **AWS Lambda** para ejecutar las operaciones.
-- **DynamoDB** como base de datos.
-
-> El AI Agent decide qué necesita hacer y cuándo utilizar la herramienta. El backend ejecuta las reglas de negocio y devuelve el resultado al agente.
-
-<div align="left">
-<img src="docs/assets/arquitectura.png" alt="Arquitectura Citas Médicas AI Agent" width="100%" />
+<div align="center">
+<img src="./docs/assets/portada.png" alt="Ilustración: un menú de opciones numeradas frente a una conversación natural para agendar una cita" width="90%" />
+<br><em>Imagen ilustrativa: del menú de opciones a la conversación natural.</em>
 </div>
 
-### Diagrama
+---
+
+## El caso de uso
+
+Un asistente de citas médicas que permite:
+
+- Consultar disponibilidad de horarios por especialidad y fecha.
+- Agendar una cita (con un código tipo `CITA-1234`).
+- Consultar una cita por documento de identidad.
+- Reagendar y cancelar una cita por su código.
+
+Ambas versiones ejecutan la misma lógica de negocio sobre AWS Lambda y DynamoDB. Es un prototipo con datos ficticios; el código es el que se usó en la charla y se configuró a mano en la consola de AWS, sin plantillas de despliegue automático.
+
+---
+
+## Dos versiones, la misma lógica
+
+| | Versión con intents | Versión con agente |
+|---|---|---|
+| Servicio que conversa | Amazon Lex V2 | Amazon Q in Connect |
+| Carpeta | [`lex-intents/`](lex-intents/) | [`agente-q-in-connect/`](agente-q-in-connect/) |
+| Quién decide qué operación ejecutar | El intent que detecta Lex (cinco intents, como `AgendarCitaIntent`) | El agente, que elige la herramienta; la Lambda recibe un campo `action` |
+| Si falta o falla un dato | La Lambda vuelve a pedir ese dato (`ElicitSlot`), con un reintento como máximo | La Lambda devuelve un mensaje con lo que falta o los horarios libres, y el agente continúa la conversación |
+| Formato de entrada | Evento de Lex (`sessionState` con slots) | Parámetros del flujo de Connect (`Details.Parameters`) |
+| Formato de salida | Respuesta de Lex (`ElicitSlot` o `Close`) | Diccionario plano de textos |
+
+Lo que cambia entre las dos versiones es dónde vive la conversación. En la versión con intents, la Lambda se ocupa también de parte del manejo del diálogo. En la versión con agente, la Lambda se queda con las reglas de negocio y la conversación la guía el prompt.
+
+### La misma conversación en las dos versiones
+
+Se probó el mismo mensaje inicial en ambas:
+
+<div align="center">
+
+### La misma conversación en las dos versiones
+
+Se probó el mismo mensaje inicial en ambas:
+
+> Hola, quiero agendar una cita a mi nombre soy la paciente Sol, es urgente la necesito para hoy mismo.
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/assets/conversacion-bot.png" alt="Conversación con el bot de Lex" width="90%" />
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/assets/conversacion-agente.png" alt="Conversación con el agente de Amazon Q in Connect" width="90%" />
+    </td>
+  </tr>
+</table>
+
+El agente entendió el nombre, la urgencia y la fecha en el primer mensaje, pidió documento y especialidad en una sola pregunta y ofreció los horarios en lenguaje natural.
+
+El bot con intents pregunta cada dato con una frase fija y no interpreta el mensaje libre como el agente: aunque la paciente ya había dicho su nombre, volvió a preguntarlo. La conversación permite un reintento adicional antes de cerrarse, según nuestra configuración; no es una limitación de Lex.
+
+</div>
+
+---
+## Arquitectura
+
+### Versión con agente
 
 ```text
 Usuario
@@ -33,134 +78,122 @@ Usuario
 Chat (Amazon Connect)
    │
    ▼
-Bot Lex "Puente"
-(sin intents, solo reenvía)
+Bot Lex puente
+(sin lógica de intents propia; conecta con el agente)
    │
    ▼
 AI Agent (Amazon Q in Connect)
-   │  Razonamiento + decisión
+   │  razonamiento y decisión
    ▼
-Tool (Flow Module)
+Herramienta (Flow Module)
    │
    ▼
 AWS Lambda
    │
    ▼
-Repository Pattern
+DynamoDB
+```
+
+<div align="left">
+<img src="agente-q-in-connect/assets/arquitectura-agente.png" alt="Arquitectura de la versión con agente" width="100%" />
+</div>
+
+### Versión con intents
+
+```text
+Usuario
+   │
+   ▼
+Chat (Amazon Connect)
+   │
+   ▼
+Bot Lex V2 (intents y slots)
+   │  fulfillment
+   ▼
+AWS Lambda
    │
    ▼
 DynamoDB
 ```
 
-> El AI Agent decide qué necesita hacer y cuándo utilizar la herramienta. El backend ejecuta las reglas de negocio y devuelve el resultado al agente.
-
-## Empezar desde cero
-
-Si acabas de clonar el repositorio y quieres reproducir la solución completa, sigue este orden:
-
-### Paso 1. Preparar y desplegar el backend
-
-Configura Python, ejecuta las pruebas y despliega:
-
-→ **[Guía de Despliegue del Backend](docs/deploy-backend.md)**
-
-Cubre: preparación del entorno Python, pruebas unitarias, validación y construcción con AWS SAM, despliegue de Lambda, DynamoDB e IAM, carga de especialidades y verificación del Lambda desplegado.
-
-### Paso 2. Configurar Amazon Connect y el AI Agent
-
-Una vez desplegado el backend:
-
-→ **[Guía de Configuración de Amazon Connect](docs/amazon-connect-setup.md)**
-
-Cubre: dominio de Amazon Q in Connect, Flow Module (Tool), permisos del Security Profile, AI Agent de tipo Orchestration, prompt y reglas del agente, publicación, Bot puente de Amazon Lex y Contact Flow principal.
-
-> ⚠️ El backend debe estar desplegado antes de configurar la Tool, porque necesitas el ARN de la función Lambda.
-
-### Paso 3. Configurar el comportamiento del agente
-
-→ **[Prompt y reglas del AI Agent](docs/prompt-agente.md)**
-
-### Paso 4. Si encuentras algún problema
-
-→ **[Troubleshooting y limitaciones conocidas](docs/troubleshooting.md)**
-
-## Quickstart del backend
-
-Si ya conoces el proyecto y solo necesitas levantar el backend:
-
-```bash
-# Clonar el repositorio
-git clone <URL_DEL_REPOSITORIO>
-cd citas-medicas-ai-agent
-
-# Crear el entorno virtual
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-
-# Instalar dependencias
-pip install -r requirements.txt
-
-# Ejecutar pruebas
-pytest tests/ -v
-
-# Validar y construir
-sam validate
-sam build
-
-# Primer despliegue
-sam deploy --guided
-
-# Siguientes despliegues
-sam deploy
-
-# Cargar datos iniciales
-python scripts/seed_especialidades.py
-```
-
-> Para el proceso completo de despliegue, consulta **[docs/deploy-backend.md](docs/deploy-backend.md)**.
-
-## Estructura del proyecto
-
-El código está separado en capas para mantener aisladas la entrada desde Amazon Connect, la lógica de negocio y el acceso a datos.
-
-```text
-📦 citas-medicas-ai-agent
-├── template.yaml                 # Infraestructura como código (SAM)
-├── 📁 src
-│   ├── lambda_function.py        # Router de entrada
-│   ├── channel_adapter.py        # Adaptador del formato de Connect
-│   ├── repository.py             # Operaciones DynamoDB
-│   ├── utils.py                  # Utilidades y normalización
-│   └── 📁 handlers               # Reglas de negocio
-├── 📁 tests                      # Pruebas unitarias
-├── 📁 events                     # Eventos para pruebas
-├── 📁 scripts
-│   └── seed_especialidades.py    # Carga inicial de especialidades
-└── 📁 docs
-    ├── deploy-backend.md         # Despliegue del backend
-    ├── amazon-connect-setup.md   # Configuración de Connect
-    ├── prompt-agente.md          # Prompt y reglas del agente
-    └── troubleshooting.md        # Problemas y limitaciones
-```
-
-## Resultado de las pruebas
-
-Las pruebas se ejecutan 100% en memoria, sin consumir servicios reales de AWS.
-
-| Módulo | Descripción | Pruebas | Resultado |
-| :--- | :--- | :---: | :---: |
-| `test_handlers.py` | Lógica de agendar, consultar, cancelar y reagendar | 13 | ✅ PASSED |
-| `test_utils.py` | Normalización de datos y extracción de códigos | 15 | ✅ PASSED |
-| **Total** | **Cobertura de las reglas de negocio** | **28** | **100% PASSED** |
-
-```bash
-pytest tests/ -v
-```
-
-## Datos de prueba
-
-> ⚠️ Este proyecto utiliza datos ficticios para demostración y pruebas. **No utilizar información real de pacientes ni datos personales.** Las credenciales de AWS tampoco deben almacenarse dentro del repositorio.
+<div align="left">
+<img src="lex-intents/assets/arquitectura-bot.png" alt="Arquitectura de la versión con intents" width="100%" />
+</div>
 
 ---
 
-**Desarrollado por [Sofía Torres](https://github.com/sofia-torres-v) y [Yahaira Pérez](https://github.com/YahairaPerez1994)** ✨
+## Estructura del repositorio
+
+```text
+📦 Amazon-Connect-Intents-to-Prompts
+├── 📁 lex-intents                # versión con Lex
+│   ├── README.md
+│   ├── lambda_function.py
+│   └── 📁 assets
+├── 📁 agente-q-in-connect        # versión con agente
+│   ├── README.md
+│   ├── lambda_function.py
+│   └── 📁 assets
+├── 📁 docs
+│   ├── 📁 assets                 # imágenes de la documentación
+│   ├── amazon-connect-setup.md   # configuración de Connect (versión con agente)
+│   ├── prompt-agente.md          # prompt y reglas (versión con agente)
+│   ├── tablas-dynamodb.md        # esquema de las tablas (común)
+│   └── troubleshooting.md        # problemas y limitaciones (común)
+└── README.md
+```
+
+---
+
+## Empezar desde cero
+
+Este proyecto se configuró a mano en la consola de AWS; no hay despliegue automático. Para reproducirlo:
+
+### Paso 1. Crear las tablas de DynamoDB (común a las dos versiones)
+
+→ **[Esquema de las tablas de DynamoDB](docs/tablas-dynamodb.md)**
+
+### Paso 2. Elegir la versión que quieres reproducir
+
+Cada versión tiene su propia guía, con su Lambda, su configuración en Amazon Connect y los documentos que necesita:
+
+| Versión | Guía |
+|---|---|
+| Con agente (Amazon Q in Connect) | **[agente-q-in-connect/](agente-q-in-connect/README.md)** |
+| Con intents (Amazon Lex V2) | **[lex-intents/](lex-intents/README.md)** |
+
+### Paso 3. Si encuentras algún problema
+
+→ **[Troubleshooting y limitaciones conocidas](docs/troubleshooting.md)**
+
+---
+
+## Alcance y limitaciones
+
+- Es un prototipo con datos ficticios; no está listo para producción.
+- No hay plantillas de infraestructura como código ni pruebas automatizadas en este repositorio.
+- Las dos Lambdas no comparten código: cada una incluye su propia copia de la lógica de negocio.
+- La versión del agente registra en los logs el evento completo que recibe, que incluye el documento del paciente. Con datos reales habría que quitarlo.
+- En la versión con Lex, el código de la cita se genera al azar sin comprobar que no exista; la versión del agente sí lo comprueba.
+- No se valida el formato ni la longitud del documento de identidad.
+- No medí costos, latencia ni calidad de las respuestas del agente.
+
+---
+
+## Créditos
+
+Proyecto desarrollado en conjunto para la charla.
+
+- Versión con agente (Amazon Q in Connect): Yahaira Pérez.
+- Versión con intents (Amazon Lex V2): Sofía Torres.
+- Diseño, pruebas y documentación: trabajo compartido.
+
+---
+
+## Datos de prueba
+
+> ⚠️ Este proyecto utiliza datos ficticios. No utilices información real de pacientes ni datos personales. Las credenciales de AWS no deben almacenarse en el repositorio.
+
+---
+
+Desarrollado por **Sofía Torres** · [LinkedIn](https://www.linkedin.com/in/sofia-torres-v/) y **Yahaira Pérez** · [LinkedIn](https://www.linkedin.com/in/yahaira-perez/) ✨
