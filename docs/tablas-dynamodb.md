@@ -33,9 +33,7 @@ Guarda las especialidades que se atienden y sus horarios.
 ```json
 {
   "especialidad": "medicina general",
-  "horas_disponibles": [
-    "[COMPLETAR: horarios exactos, tal como están en tu tabla]"
-  ]
+  "horas_disponibles": ["08:00", "09:30", "11:00", "14:00", "16:30"]
 }
 ```
 

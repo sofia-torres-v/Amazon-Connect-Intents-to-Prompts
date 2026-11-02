@@ -1,10 +1,12 @@
-|# Configuración del bot de Lex y su conexión a Amazon Connect (versión con intents)
+# Configuración del bot de Lex y su conexión a Amazon Connect (versión con intents)
 
 ← [Volver al README principal](../README.md)
 
 Estos pasos se realizan manualmente desde la consola de AWS. Los nombres de los menús pueden variar un poco según la versión de la consola.
 
 Antes de empezar, necesitas las tablas de DynamoDB ([tablas-dynamodb.md](tablas-dynamodb.md)) y la función Lambda con el código de [`lex-intents/lambda_function.py`](../lex-intents/lambda_function.py). Para la versión con agente, consulta [setup-agente.md](setup-agente.md).
+
+> El flujo de contacto de esta versión está en [`exportados/`](../lex-intents/exportados/). Si lo importas, vuelve a seleccionar tu propio bot y alias, porque los identificadores de ese repositorio son marcadores.
 
 ---
 
@@ -14,7 +16,7 @@ Antes de empezar, necesitas las tablas de DynamoDB ([tablas-dynamodb.md](tablas-
 
 1. En la consola de AWS, abre **Amazon Lex**.
 2. Ve a **Bots → Create bot** y elige crear un bot en blanco.
-3. Ponle nombre y deja que Lex cree un rol de IAM con los permisos básicos.
+3. Ponle nombre (en este proyecto, `Bot_CitasMedicas_Traditional`) y deja que Lex cree un rol de IAM con los permisos básicos.
 4. Elige el idioma en el que vas a conversar con el cliente (español).
 
 ---
@@ -23,7 +25,7 @@ Antes de empezar, necesitas las tablas de DynamoDB ([tablas-dynamodb.md](tablas-
 
 ![Intents del bot de citas](assets/lex-intents.png)
 
-En el idioma del bot, agrega estos cinco intents. Los nombres deben ser exactamente estos, porque la Lambda decide qué operación ejecutar según el nombre del intent:
+En el idioma del bot, agrega estos seis intents. Los nombres deben ser exactamente estos, porque la Lambda decide qué operación ejecutar según el nombre del intent:
 
 | Intent | Qué hace |
 |---|---|
@@ -32,6 +34,7 @@ En el idioma del bot, agrega estos cinco intents. Los nombres deben ser exactame
 | `CancelarCitaIntent` | Cancela una cita |
 | `ConsultarDisponibilidadIntent` | Muestra horarios libres |
 | `ReagendarCitaIntent` | Cambia fecha y hora de una cita |
+| `DespedidaIntent` | Despide al paciente (no usa la Lambda) |
 
 A cada intent agrégale **sample utterances**, las frases con las que el cliente suele pedir esa operación. Es lo que Lex usa para reconocer el intent.
 
@@ -50,6 +53,8 @@ Cada intent pide los datos que le faltan mediante slots. Los nombres deben coinc
 | `CancelarCitaIntent` | `codigo_cita` |
 | `ConsultarDisponibilidadIntent` | `especialidad`, `fecha` |
 | `ReagendarCitaIntent` | `codigo_cita`, `fecha`, `hora` |
+
+`DespedidaIntent` no usa slots.
 
 Para cada slot configura:
 
@@ -71,7 +76,7 @@ Un detalle importante: la Lambda solo pasa la especialidad a minúsculas y la bu
 
 ![Configuración del idioma en el alias asignando la función Lambda](assets/lex-alias-language-support.png)
 
-3. En cada intent, activa el uso de la Lambda para el fulfillment.
+3. En cada intent de operación (todos menos `DespedidaIntent`), activa el uso de la Lambda para el fulfillment.
 
 ![Activación del fulfillment como activo en el intent](assets/lex-fulfillment-active.png)
 
@@ -80,6 +85,7 @@ Un detalle importante: la Lambda solo pasa la especialidad a minúsculas y la bu
 ![Políticas de permisos de IAM asociados para la invocación](assets/lex-iam-permissions.png)
 
 La Lambda responde a Lex de dos formas: pide de nuevo un slot (`ElicitSlot`) o cierra la conversación con el mensaje final (`Close`). Vuelve a preguntar un slot una sola vez.
+
 ---
 
 ## 5. Construir el bot
@@ -93,14 +99,17 @@ Haz clic en **Build**. Cuando termine, puedes probarlo desde el panel de prueba 
 ![Flujo de contacto de la versión con Lex](assets/contact-flow-lex.png)
 
 1. Asegúrate de que el bot esté habilitado para tu instancia de Amazon Connect, en la configuración de la instancia (sección de Amazon Lex).
-2. Ve a **Flows → Create flow** y conecta los bloques en esta secuencia:
+2. Ve a **Flows → Create flow** (en este proyecto, `CitasMedicas-LexBot`) y arma esta secuencia:
 
 | # | Bloque | Configuración |
 |---|---|---|
-| 1 | **Set logging behavior** | Enabled |
-| 2 | **Mensaje de bienvenida** | El saludo inicial del asistente |
-| 3 | **Get customer input** | Selecciona el bot de Lex y su alias |
-| 4 | **Disconnect** | Finalización de todos los caminos |
+| 1 | **Set voice** y **Set logging behavior** | Idioma Spanish (US), voz Fernanda, y logging en Enabled |
+| 2 | **Set contact attributes** | `es_inicio = SI` e `intentos_fallidos = 0` |
+| 3 | **Check contact attributes** (`es_inicio`) | Si vale `SI`, envía el mensaje de bienvenida y cambia `es_inicio` a `NO`; si no, va directo al bot |
+| 4 | **Get customer input** (el bot) | Selecciona el bot (`Bot_CitasMedicas_Traditional`) y su alias de prueba. La primera vez pregunta "¿En qué puedo ayudarte hoy?"; las siguientes, "¿Algo más en lo que pueda ayudarte?" |
+| 5 | Una rama por cada intent | Los intents de operación ponen `intentos_fallidos` en 0 y vuelven al bot. `DespedidaIntent` envía el mensaje de despedida y termina |
+| 6 | Si el bot no reconoce el intent | Compara `intentos_fallidos`: la primera vez envía "No entendí tu solicitud" y vuelve a preguntar; si ya había fallado antes, avisa del problema y desconecta |
+| 7 | **Disconnect** | Final de todos los caminos |
 
 3. Guarda, publica el flujo y pruébalo con **Test chat**.
 

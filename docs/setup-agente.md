@@ -36,13 +36,15 @@ Aquí es donde se invoca la Lambda de la carpeta [`agente-q-in-connect/`](../age
 3. Configura el **Input Schema** (Settings → Input, tipo Object):
    - `action` (String, **requerido**)
    - `especialidad`, `fecha`, `hora`, `documento`, `paciente`, `codigo_cita` (Strings, opcionales).
+   - En **Output**, el resultado devuelve `ok`, `mensaje`, `horas_disponibles`, `codigo`, `especialidad`, `fecha`, `hora` y `estado` (todos String).
 
    ![Input Schema del Flow Module](../docs/assets/flow-module-input-schema.png)
+
 4. **Diseño del módulo:**
    - Bloque `Set logging behavior` (Enabled).
-   - Bloque `AWS Lambda function`: selecciona la función Lambda de la versión con agente (la de la carpeta `agente-q-in-connect/`).
-   - Tanto la rama **Success** como **Error** deben finalizar en bloques **`Return`** *(no usar `MessageParticipant`, para que el resultado regrese al AI Agent)*.
-5. En **Description** del módulo, documenta las 5 acciones, sus parámetros y los formatos obligatorios (ver [`prompt-agente.md`](prompt-agente.md)). El LLM lee este texto para decidir cómo invocar la herramienta.
+   - Bloque `AWS Lambda function`: selecciona la función Lambda de la versión con agente (la de la carpeta `agente-q-in-connect/`). La invocación es síncrona, con un límite de 8 segundos y respuesta en formato JSON.
+   - Tanto la rama **Success** como **Error** deben finalizar en bloques **`Return`** *(no usar `MessageParticipant`, para que el resultado regrese al AI Agent)*. En la rama de error, el `Return` devuelve `ok = false` y un mensaje fijo para el paciente.
+5. En **Description** del módulo, documenta las 4 acciones (`consultar_disponibilidad`, `agendar_cita`, `consultar_cita` y `cancelar_cita`), sus parámetros y los formatos obligatorios (ver [`prompt-agente.md`](prompt-agente.md)). El LLM lee este texto para decidir cómo invocar la herramienta.
 6. Guarda y selecciona **Save → Save as tool**.
 
 ---
@@ -60,7 +62,7 @@ Aquí es donde se invoca la Lambda de la carpeta [`agente-q-in-connect/`](../age
 
 ![Resumen del AI Agent](../docs/assets/ai-agent-overview2.png)
 
-1. Ve a **Amazon Q in Connect → AI Agents → Create AI Agent**.
+1. Ve a **Amazon Q in Connect → AI Agents → Create AI Agent** (en este proyecto, `CitasMedicas-Orchestration`, con el prompt `CitasMedicas-Prompt`).
 2. **Agent Type:** selecciona **Orchestration**. Es el único tipo compatible con el bloque nativo `Get customer input` (Self Service no lo soporta).
 3. **Tools:** agrega la herramienta `GestionCitasMedicas` (`Add tool → Add existing AI Tool`), además de las herramientas base (`Complete` y `Escalate`). Mantén **desactivado** `User Confirmation` en la herramienta: la confirmación se maneja por prompt, no por este switch, porque la herramienta mezcla acciones de lectura y escritura.
 4. **Prompt:** configura el System Prompt base y añade las reglas de negocio (ver [`prompt-agente.md`](prompt-agente.md)).
@@ -75,7 +77,7 @@ Aquí es donde se invoca la Lambda de la carpeta [`agente-q-in-connect/`](../age
 
 ![Configuración del bot puente en Lex](../docs/assets/lex-puente-config.png)
 
-1. Ve a **Flows → Conversational AI → Create bot** (por ejemplo, `Bot_CitasMedicas_Orchestration`).
+1. Ve a **Flows → Conversational AI → Create bot** (en este proyecto, `Bot_CitasMedicas_Orchestration`).
 2. Idioma: **Spanish (US)**.
 3. En la configuración del idioma, activa el switch **"Amazon Connect AI agent intent"**.
 4. *Nota:* este bot no requiere que definas intents ni slots propios. Al activar el switch se genera un intent para el AI Agent, y el bot actúa únicamente como canal puente hacia él.
@@ -94,11 +96,13 @@ Ve a **Flows → Create flow** y conecta los bloques en la siguiente secuencia:
 | # | Bloque | Configuración |
 |---|---|---|
 | 1 | **Set logging behavior** | Enabled |
-| 2 | **Set voice** | Spanish (US) (por ejemplo, Pedro o Fernanda) |
+| 2 | **Set voice** | Idioma Spanish (US) y voz Pedro |
 | 3 | **Connect assistant** | Selecciona el dominio de Q in Connect (paso 1) |
-| 4 | **Get customer input** | Selecciona el bot de Lex (`Bot_CitasMedicas_Orchestration`, paso 5). Agrega el **Session Attribute** manual: Key `x-amz-lex:q-in-connect:ai-agent-arn`, Value = ARN publicado del AI Agent (paso 4) |
-| 5 | **(opcional) Set working queue → Transfer to queue** | Para derivar a un agente humano |
-| 6 | **Disconnect** | Finalización de todos los caminos de error y de fin |
+| 4 | **Connect assistant** | Selecciona el AI Agent (`CitasMedicas-Orchestration`) |
+| 5 | **Get customer input** | Selecciona el bot de Lex (`Bot_CitasMedicas_Orchestration`, paso 5) con su alias de prueba y el mensaje de bienvenida. Agrega el **Session Attribute** manual: Key `x-amz-lex:q-in-connect:ai-agent-arn`, Value = ARN publicado del AI Agent (paso 4) |
+| 6 | **Disconnect** | Final de todos los caminos |
+
+Para derivar a un agente humano se puede agregar **Set working queue → Transfer to queue**; el flujo exportado no lo incluye.
 
 **Save** y **Publish**.
 

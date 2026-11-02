@@ -58,7 +58,6 @@ Estas acciones son:
 
 * `agendar_cita`
 * `cancelar_cita`
-* `reagendar_cita`
 
 Por ejemplo, antes de agendar una cita, el agente debe confirmar los datos relevantes y esperar una respuesta afirmativa del usuario.
 
@@ -116,7 +115,8 @@ La tool `GestionCitasMedicas` permite realizar las siguientes operaciones:
 | `agendar_cita`               | Escritura  | Sí                       |
 | `consultar_cita`             | Lectura    | No                       |
 | `cancelar_cita`              | Escritura  | Sí                       |
-| `reagendar_cita`             | Escritura  | Sí                       |
+
+> La Lambda también implementa `reagendar_cita`, pero la herramienta publicada no la expone; por eso el agente no ofrece reagendar citas.
 
 ---
 
@@ -183,24 +183,6 @@ el agente debe:
 
 ---
 
-### Reagendar una cita
-
-Antes de ejecutar:
-
-```text
-reagendar_cita
-```
-
-el agente debe:
-
-1. Identificar la cita existente (`codigo_cita`).
-2. Recopilar la nueva fecha y/o hora.
-3. Mostrar al usuario los nuevos datos.
-4. Solicitar confirmación explícita.
-5. Ejecutar la tool únicamente después de recibir la confirmación.
-
----
-
 ## 5. Interacción en Lenguaje Natural
 
 El agente debe mantener una conversación natural y evitar exponer detalles técnicos de la arquitectura al usuario.
@@ -251,7 +233,7 @@ El agente debe respetar las siguientes restricciones:
 1. Solo puede trabajar con las cinco especialidades definidas (sección 2.1).
 2. No debe inventar horarios ni disponibilidad.
 3. No debe confirmar una cita hasta recibir una respuesta exitosa de la tool.
-4. No debe cancelar ni reagendar una cita sin confirmación explícita.
+4. No debe cancelar una cita sin confirmación explícita.
 5. No debe ejecutar acciones de escritura sin la confirmación correspondiente.
 6. Debe comunicar al usuario los resultados proporcionados por la tool de manera natural.
 7. Ante un resultado `ok: false`, debe utilizar el campo `mensaje` como información de negocio.
