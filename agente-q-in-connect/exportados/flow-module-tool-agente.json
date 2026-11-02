@@ -1,0 +1,255 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "4f2c6d2e-860e-444c-87ad-3a39d24223d3",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": 40,
+      "y": 40
+    },
+    "ActionMetadata": {
+      "4f2c6d2e-860e-444c-87ad-3a39d24223d3": {
+        "position": {
+          "x": 134.4,
+          "y": 97.6
+        }
+      },
+      "fa152343-4f4a-4aac-ab5d-c29a1a3de466": {
+        "position": {
+          "x": 606.4,
+          "y": 112.8
+        }
+      },
+      "791b76a6-28d6-4b68-be83-c798c0a68789": {
+        "position": {
+          "x": 606.4,
+          "y": 289.6
+        }
+      },
+      "0b250d60-b75c-42a5-85a7-4f8c44c16107": {
+        "position": {
+          "x": 358.4,
+          "y": 132
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "citas-medicas-tool"
+          },
+          "LambdaInvocationAttributes": {
+            "action": {
+              "useDynamic": true
+            },
+            "especialidad": {
+              "useDynamic": true
+            },
+            "fecha": {
+              "useDynamic": true
+            },
+            "documento": {
+              "useDynamic": true
+            },
+            "hora": {
+              "useDynamic": true
+            },
+            "paciente": {
+              "useDynamic": true
+            },
+            "codigo_cita": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "action": true,
+          "especialidad": true,
+          "fecha": true,
+          "documento": true,
+          "hora": true,
+          "paciente": true,
+          "codigo_cita": true
+        }
+      }
+    },
+    "Annotations": [],
+    "name": "GestionCitasMedicas",
+    "description": "Herramienta unica para gestionar citas medicas. Puede consultar disponibilidad, agendar una cita nueva, consultar una cita existente, y CANCELAR una cita usando el codigo_cita. Usar el parametro action con el valor correspondiente: consultar_disponibilidad, agendar_cita, consultar_cita, o cancelar_cita. Esta herramienta SI tiene la capacidad de cancelar citas directamente.",
+    "status": "published",
+    "settings": {
+      "input": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "description": "Accion a ejecutar. Valores validos: consultar_disponibilidad, agendar_cita, consultar_cita, cancelar_cita"
+            },
+            "especialidad": {
+              "type": "string",
+              "description": "Especialidad medica. Requerido para consultar_disponibilidad y agendar_cita"
+            },
+            "fecha": {
+              "type": "string",
+              "description": "Fecha en formato YYYY-MM-DD. Requerido para consultar_disponibilidad y agendar_cita"
+            },
+            "hora": {
+              "type": "string",
+              "description": "Hora en formato HH:MM. Requerido para agendar_cita"
+            },
+            "documento": {
+              "type": "string",
+              "description": "Documento de identidad del paciente. Requerido para agendar_cita y consultar_cita"
+            },
+            "paciente": {
+              "type": "string",
+              "description": "Nombre completo del paciente. Usar en agendar_cita si el paciente lo indica"
+            },
+            "codigo_cita": {
+              "type": "string",
+              "description": "Codigo de la cita, formato CITA-XXXX. Requerido para cancelar_cita"
+            }
+          },
+          "required": [
+            "action"
+          ]
+        }
+      },
+      "resultData": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "ok": {
+              "type": "string",
+              "description": "true o false"
+            },
+            "mensaje": {
+              "type": "string",
+              "description": "Respuesta conversacional para el paciente"
+            },
+            "horas_disponibles": {
+              "type": "string",
+              "description": "Horas disponibles separadas por coma"
+            },
+            "codigo": {
+              "type": "string",
+              "description": "Codigo de la cita"
+            },
+            "especialidad": {
+              "type": "string",
+              "description": "Especialidad de la cita"
+            },
+            "fecha": {
+              "type": "string",
+              "description": "Fecha de la cita"
+            },
+            "hora": {
+              "type": "string",
+              "description": "Hora de la cita"
+            },
+            "estado": {
+              "type": "string",
+              "description": "Estado de la cita"
+            }
+          }
+        }
+      },
+      "transitions": {
+        "results": [
+          {
+            "name": "Success",
+            "description": "cliente encontrado"
+          },
+          {
+            "name": "Error",
+            "description": "Falla técnica"
+          }
+        ]
+      }
+    },
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Parameters": {
+        "FlowLoggingBehavior": "Enabled"
+      },
+      "Identifier": "4f2c6d2e-860e-444c-87ad-3a39d24223d3",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Transitions": {
+        "NextAction": "0b250d60-b75c-42a5-85a7-4f8c44c16107"
+      }
+    },
+    {
+      "Parameters": {
+        "ResultData": {
+          "ok": "$.External.ok",
+          "mensaje": "$.External.mensaje",
+          "horas_disponibles": "$.External.horas_disponibles",
+          "codigo": "$.External.codigo",
+          "especialidad": "$.External.especialidad",
+          "fecha": "$.External.fecha",
+          "hora": "$.External.hora",
+          "estado": "$.External.estado"
+        }
+      },
+      "Identifier": "fa152343-4f4a-4aac-ab5d-c29a1a3de466",
+      "Type": "EndFlowModuleExecution",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "ResultData": {
+          "ok": "false",
+          "mensaje": "Tuve un problema consultando la disponibilidad. Intentemos de nuevo en un momento."
+        }
+      },
+      "Identifier": "791b76a6-28d6-4b68-be83-c798c0a68789",
+      "Type": "EndFlowModuleExecution",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "<ARN_DE_LA_LAMBDA>",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "action": "$.Modules.Input.action",
+          "especialidad": "$.Modules.Input.especialidad",
+          "fecha": "$.Modules.Input.fecha",
+          "documento": "$.Modules.Input.documento",
+          "hora": "$.Modules.Input.hora",
+          "paciente": "$.Modules.Input.paciente",
+          "codigo_cita": "$.Modules.Input.codigo_cita"
+        },
+        "ResponseValidation": {
+          "ResponseType": "JSON"
+        }
+      },
+      "Identifier": "0b250d60-b75c-42a5-85a7-4f8c44c16107",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "fa152343-4f4a-4aac-ab5d-c29a1a3de466",
+        "Errors": [
+          {
+            "NextAction": "791b76a6-28d6-4b68-be83-c798c0a68789",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    }
+  ],
+  "Settings": {
+    "InputParameters": [],
+    "OutputParameters": [],
+    "Transitions": [
+      {
+        "DisplayName": "Success",
+        "ReferenceName": "Success",
+        "Description": ""
+      },
+      {
+        "DisplayName": "Error",
+        "ReferenceName": "Error",
+        "Description": ""
+      }
+    ]
+  }
+}

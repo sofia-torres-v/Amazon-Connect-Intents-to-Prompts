@@ -30,7 +30,7 @@ Si el usuario solicita una especialidad que no se encuentra en esta lista, por e
 
 ### 2.2 Formatos Obligatorios para la Tool
 
-Al invocar la tool `CitasMedicasTool`, el agente debe estructurar los parámetros utilizando exactamente los siguientes formatos:
+Al invocar la tool `GestionCitasMedicas`, el agente debe estructurar los parámetros utilizando exactamente los siguientes formatos:
 
 | Parámetro      | Formato                 | Ejemplo            |
 | -------------- | ------------------------ | ------------------- |
@@ -108,7 +108,7 @@ Otros ejemplos pueden incluir:
 
 ## 3. Acciones Disponibles
 
-La tool `CitasMedicasTool` permite realizar las siguientes operaciones:
+La tool `GestionCitasMedicas` permite realizar las siguientes operaciones:
 
 | Acción                     | Tipo      | Requiere confirmación |
 | --------------------------- | ---------- | ----------------------- |
@@ -210,7 +210,7 @@ No debe mencionar directamente:
 * Lambda
 * DynamoDB
 * Amazon Q in Connect
-* `CitasMedicasTool`
+* `GestionCitasMedicas`
 * nombres internos de parámetros
 * errores internos de AWS
 

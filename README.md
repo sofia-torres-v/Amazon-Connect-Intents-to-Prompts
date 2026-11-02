@@ -30,22 +30,19 @@ Ambas versiones ejecutan la misma lógica de negocio sobre AWS Lambda y DynamoDB
 |---|---|---|
 | Servicio que conversa | Amazon Lex V2 | Amazon Q in Connect |
 | Carpeta | [`lex-intents/`](lex-intents/) | [`agente-q-in-connect/`](agente-q-in-connect/) |
-| Quién decide qué operación ejecutar | El intent que detecta Lex (cinco intents, como `AgendarCitaIntent`) | El agente, que elige la herramienta; la Lambda recibe un campo `action` |
+| Quién decide qué operación ejecutar | El intent que detecta Lex (seis intents, como `AgendarCitaIntent`) | El agente, que elige la herramienta; la Lambda recibe un campo `action` |
+| Cómo se llega a la Lambda | Lex la invoca como fulfillment del intent | El agente invoca una herramienta (un Flow Module de Connect), que llama a la Lambda |
 | Si falta o falla un dato | La Lambda vuelve a pedir ese dato (`ElicitSlot`), con un reintento como máximo | La Lambda devuelve un mensaje con lo que falta o los horarios libres, y el agente continúa la conversación |
 | Formato de entrada | Evento de Lex (`sessionState` con slots) | Parámetros del flujo de Connect (`Details.Parameters`) |
 | Formato de salida | Respuesta de Lex (`ElicitSlot` o `Close`) | Diccionario plano de textos |
 
-Lo que cambia entre las dos versiones es dónde vive la conversación. En la versión con intents, la Lambda se ocupa también de parte del manejo del diálogo. En la versión con agente, la Lambda se queda con las reglas de negocio y la conversación la guía el prompt.
+Lo que cambia entre las dos versiones es dónde vive la conversación. En la versión con intents, la Lambda se ocupa también de parte del manejo del diálogo. En la versión con agente, la Lambda se queda con las reglas de negocio, la conversación la guía el prompt y es el agente quien decide cuándo usar la herramienta que la invoca.
 
 ### La misma conversación en las dos versiones
 
 Se probó el mismo mensaje inicial en ambas:
 
 <div align="center">
-
-### La misma conversación en las dos versiones
-
-Se probó el mismo mensaje inicial en ambas:
 
 > Hola, quiero agendar una cita a mi nombre soy la paciente Sol, es urgente la necesito para hoy mismo.
 
@@ -67,6 +64,7 @@ El bot con intents pregunta cada dato con una frase fija y no interpreta el mens
 </div>
 
 ---
+
 ## Arquitectura
 
 ### Versión con agente
@@ -95,7 +93,7 @@ DynamoDB
 ```
 
 <div align="left">
-<img src="agente-q-in-connect/assets/arquitectura-agente.png" alt="Arquitectura de la versión con agente" width="100%" />
+<img src="docs/assets/arquitectura-agente.png" alt="Arquitectura de la versión con agente" width="100%" />
 </div>
 
 ### Versión con intents
@@ -117,7 +115,7 @@ DynamoDB
 ```
 
 <div align="left">
-<img src="lex-intents/assets/arquitectura-bot.png" alt="Arquitectura de la versión con intents" width="100%" />
+<img src="docs/assets/arquitectura-bot.png" alt="Arquitectura de la versión con intents" width="100%" />
 </div>
 
 ---
@@ -129,14 +127,15 @@ DynamoDB
 ├── 📁 lex-intents                # versión con Lex
 │   ├── README.md
 │   ├── lambda_function.py
-│   └── 📁 assets
+│   └── 📁 exportados             # flujo de Connect en JSON
 ├── 📁 agente-q-in-connect        # versión con agente
 │   ├── README.md
 │   ├── lambda_function.py
-│   └── 📁 assets
+│   └── 📁 exportados             # herramienta y flujo de Connect en JSON
 ├── 📁 docs
 │   ├── 📁 assets                 # imágenes de la documentación
-│   ├── amazon-connect-setup.md   # configuración de Connect (versión con agente)
+│   ├── setup-agente.md           # configuración de Connect y del agente (versión con agente)
+│   ├── setup-lex.md              # configuración del bot de Lex (versión con intents)
 │   ├── prompt-agente.md          # prompt y reglas (versión con agente)
 │   ├── tablas-dynamodb.md        # esquema de las tablas (común)
 │   └── troubleshooting.md        # problemas y limitaciones (común)
@@ -162,6 +161,8 @@ Cada versión tiene su propia guía, con su Lambda, su configuración en Amazon 
 | Con agente (Amazon Q in Connect) | **[agente-q-in-connect/](agente-q-in-connect/README.md)** |
 | Con intents (Amazon Lex V2) | **[lex-intents/](lex-intents/README.md)** |
 
+Cada versión incluye en su carpeta `exportados/` los flujos de Amazon Connect en formato JSON, como referencia o para importarlos y no armarlos a mano.
+
 ### Paso 3. Si encuentras algún problema
 
 → **[Troubleshooting y limitaciones conocidas](docs/troubleshooting.md)**
@@ -175,6 +176,7 @@ Cada versión tiene su propia guía, con su Lambda, su configuración en Amazon 
 - Las dos Lambdas no comparten código: cada una incluye su propia copia de la lógica de negocio.
 - La versión del agente registra en los logs el evento completo que recibe, que incluye el documento del paciente. Con datos reales habría que quitarlo.
 - En la versión con Lex, el código de la cita se genera al azar sin comprobar que no exista; la versión del agente sí lo comprueba.
+- La herramienta del agente expone cuatro acciones: reagendar una cita solo está disponible en la versión con Lex.
 - No se valida el formato ni la longitud del documento de identidad.
 - No medí costos, latencia ni calidad de las respuestas del agente.
 

@@ -1,0 +1,702 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "deccd991-ea4f-4b85-b778-13450942fe38",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": -896,
+      "y": -68
+    },
+    "ActionMetadata": {
+      "deccd991-ea4f-4b85-b778-13450942fe38": {
+        "position": {
+          "x": -821.6,
+          "y": 81.6
+        },
+        "children": [
+          "41d65226-10b8-46cf-bb2b-f6a0897d638b"
+        ],
+        "parameters": {
+          "TextToSpeechVoice": {
+            "languageCode": "es-US"
+          },
+          "TextToSpeechEngine": {
+            "voiceProvider": "connect:agentic"
+          }
+        },
+        "overrideConsoleVoice": true,
+        "fragments": {
+          "SetContactData": "41d65226-10b8-46cf-bb2b-f6a0897d638b"
+        },
+        "overrideLanguageAttribute": true
+      },
+      "41d65226-10b8-46cf-bb2b-f6a0897d638b": {
+        "position": {
+          "x": -821.6,
+          "y": 81.6
+        },
+        "dynamicParams": []
+      },
+      "f571bd36-ad72-4e5e-a98a-5c4f9e6d7eb7": {
+        "position": {
+          "x": -525.6,
+          "y": 172.8
+        },
+        "dynamicParams": []
+      },
+      "899af87b-17eb-4a8b-bc62-32a6ea33aeb2": {
+        "position": {
+          "x": -784.8,
+          "y": 345.6
+        }
+      },
+      "8cebea37-0080-4a6b-9611-eec757615e07": {
+        "position": {
+          "x": 2163.2,
+          "y": 902.4
+        }
+      },
+      "e1000000-0000-4000-8000-000000000002": {
+        "position": {
+          "x": 1649.6,
+          "y": 800
+        },
+        "dynamicParams": []
+      },
+      "e1000000-0000-4000-8000-000000000003": {
+        "position": {
+          "x": 1900,
+          "y": 800
+        }
+      },
+      "d1000000-0000-4000-8000-000000000001": {
+        "position": {
+          "x": 1025.6,
+          "y": 239.2
+        },
+        "parameters": {
+          "LexV2Bot": {
+            "AliasArn": {
+              "displayName": "TestBotAlias",
+              "useLexBotDropdown": true,
+              "lexV2BotName": "Bot_CitasMedicas_Traditional"
+            }
+          }
+        },
+        "useLexBotDropdown": true,
+        "lexV2BotName": "Bot_CitasMedicas_Traditional",
+        "lexV2BotAliasName": "TestBotAlias",
+        "conditionMetadata": [
+          {
+            "id": "c56e0fe8-4356-4cbc-9474-f71634a8babc",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "AgendarCitaIntent"
+          },
+          {
+            "id": "c2889e58-9d81-42bb-a45b-895264ac3f8b",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "ConsultarCitaIntent"
+          },
+          {
+            "id": "9d414b96-a6c9-4a13-a93a-e49d419024e9",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "CancelarCitaIntent"
+          },
+          {
+            "id": "54200981-d4e0-4d46-ad66-c730415a5e9c",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "DespedidaIntent"
+          },
+          {
+            "id": "6a3f6485-d65a-4b07-8cd6-8bcc17070ab6",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "ConsultarDisponibilidadIntent"
+          },
+          {
+            "id": "c1ae7e94-edc5-47b2-b660-58e9493325c7",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "ReagendarCitaIntent"
+          }
+        ]
+      },
+      "a1000000-0000-4000-8000-000000000001": {
+        "position": {
+          "x": -228,
+          "y": 253.6
+        },
+        "dynamicParams": []
+      },
+      "d975869a-9891-4dc5-be4a-0dd783d742eb": {
+        "position": {
+          "x": 1372.8,
+          "y": 517.6
+        }
+      },
+      "74a3befa-ac54-4ce7-a22e-1a65945e3251": {
+        "position": {
+          "x": 1293.6,
+          "y": 1055.2
+        }
+      },
+      "e1000000-0000-4000-8000-000000000001": {
+        "position": {
+          "x": 1400,
+          "y": 800
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "c1ce0c23-6365-44a9-b1f0-ea71898c4770",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "1"
+          }
+        ]
+      },
+      "8339c1eb-e2df-4b86-941b-1014b86876a6": {
+        "position": {
+          "x": 124.8,
+          "y": 542.4
+        },
+        "parameters": {
+          "LexV2Bot": {
+            "AliasArn": {
+              "displayName": "TestBotAlias",
+              "useLexBotDropdown": true,
+              "lexV2BotName": "Bot_CitasMedicas_Traditional"
+            }
+          }
+        },
+        "useLexBotDropdown": true,
+        "lexV2BotName": "Bot_CitasMedicas_Traditional",
+        "lexV2BotAliasName": "TestBotAlias",
+        "conditionMetadata": [
+          {
+            "id": "432d17d3-64e0-41bb-a270-02219519ba5a",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "AgendarCitaIntent"
+          },
+          {
+            "id": "2df26ba5-e339-497f-b1d6-6515c055c130",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "ConsultarCitaIntent"
+          },
+          {
+            "id": "6f30514f-c7db-4376-84cf-1ab70280be34",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "CancelarCitaIntent"
+          },
+          {
+            "id": "1430cac0-c23a-4d0a-a6fc-d49141e61d4d",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "DespedidaIntent"
+          },
+          {
+            "id": "df9a7861-4db3-473b-a110-2dd3e913354c",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "ConsultarDisponibilidadIntent"
+          },
+          {
+            "id": "ec0f2fad-0ea7-4b3a-b970-6d696bcaf2f3",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "ReagendarCitaIntent"
+          }
+        ]
+      },
+      "b9f697e9-7ff9-4ac2-bc9e-883fed87be12": {
+        "position": {
+          "x": 763.2,
+          "y": 247.2
+        },
+        "dynamicParams": []
+      },
+      "509947cb-00a4-4c5a-bc3a-4632a15cc4f7": {
+        "position": {
+          "x": 196,
+          "y": 244.8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "9a0458c0-3a15-485d-a2a0-28b8ee52c1d7",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "SI"
+          }
+        ]
+      },
+      "d95539ea-6bce-4967-8589-7659fa26a3f0": {
+        "position": {
+          "x": 471.2,
+          "y": 236
+        }
+      }
+    },
+    "Annotations": [],
+    "name": "CitasMedicas-LexBot",
+    "description": "",
+    "type": "contactFlow",
+    "status": "PUBLISHED",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Parameters": {
+        "TextToSpeechVoice": "FERNANDA",
+        "TextToSpeechEngine": "connect:agentic"
+      },
+      "Identifier": "deccd991-ea4f-4b85-b778-13450942fe38",
+      "Type": "UpdateContactTextToSpeechVoice",
+      "Transitions": {
+        "NextAction": "41d65226-10b8-46cf-bb2b-f6a0897d638b",
+        "Errors": [
+          {
+            "NextAction": "899af87b-17eb-4a8b-bc62-32a6ea33aeb2",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LanguageCode": "es-US"
+      },
+      "Identifier": "41d65226-10b8-46cf-bb2b-f6a0897d638b",
+      "Type": "UpdateContactData",
+      "Transitions": {
+        "NextAction": "899af87b-17eb-4a8b-bc62-32a6ea33aeb2",
+        "Errors": [
+          {
+            "NextAction": "899af87b-17eb-4a8b-bc62-32a6ea33aeb2",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "es_inicio": "SI"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "f571bd36-ad72-4e5e-a98a-5c4f9e6d7eb7",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "a1000000-0000-4000-8000-000000000001",
+        "Errors": [
+          {
+            "NextAction": "a1000000-0000-4000-8000-000000000001",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowLoggingBehavior": "Enabled"
+      },
+      "Identifier": "899af87b-17eb-4a8b-bc62-32a6ea33aeb2",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Transitions": {
+        "NextAction": "f571bd36-ad72-4e5e-a98a-5c4f9e6d7eb7"
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "8cebea37-0080-4a6b-9611-eec757615e07",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "intentos_fallidos": "1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "e1000000-0000-4000-8000-000000000002",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "e1000000-0000-4000-8000-000000000003",
+        "Errors": [
+          {
+            "NextAction": "e1000000-0000-4000-8000-000000000003",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "No entendí tu solicitud. Puedo ayudarte a agendar, consultar, cancelar o reagendar una cita, o ver disponibilidad de horarios. Intenta de nuevo."
+      },
+      "Identifier": "e1000000-0000-4000-8000-000000000003",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "d1000000-0000-4000-8000-000000000001",
+        "Errors": [
+          {
+            "NextAction": "d1000000-0000-4000-8000-000000000001",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "¿En que puedo ayudarte hoy?",
+        "LexV2Bot": {
+          "AliasArn": "<ARN_DEL_ALIAS_DEL_BOT>"
+        }
+      },
+      "Identifier": "d1000000-0000-4000-8000-000000000001",
+      "Type": "ConnectParticipantWithLexBot",
+      "Transitions": {
+        "NextAction": "74a3befa-ac54-4ce7-a22e-1a65945e3251",
+        "Conditions": [
+          {
+            "NextAction": "a1000000-0000-4000-8000-000000000001",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "AgendarCitaIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "a1000000-0000-4000-8000-000000000001",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "ConsultarCitaIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "a1000000-0000-4000-8000-000000000001",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "CancelarCitaIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "d975869a-9891-4dc5-be4a-0dd783d742eb",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "DespedidaIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "a1000000-0000-4000-8000-000000000001",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "ConsultarDisponibilidadIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "a1000000-0000-4000-8000-000000000001",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "ReagendarCitaIntent"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "e1000000-0000-4000-8000-000000000001",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "74a3befa-ac54-4ce7-a22e-1a65945e3251",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "intentos_fallidos": "0"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "a1000000-0000-4000-8000-000000000001",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "509947cb-00a4-4c5a-bc3a-4632a15cc4f7",
+        "Errors": [
+          {
+            "NextAction": "509947cb-00a4-4c5a-bc3a-4632a15cc4f7",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Gracias por comunicarte con nosotros. ¡Que tengas un excelente día!"
+      },
+      "Identifier": "d975869a-9891-4dc5-be4a-0dd783d742eb",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "8cebea37-0080-4a6b-9611-eec757615e07",
+        "Errors": [
+          {
+            "NextAction": "8cebea37-0080-4a6b-9611-eec757615e07",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Ocurrió un problema o no pudimos entender tu solicitud. Intenta de nuevo más tarde."
+      },
+      "Identifier": "74a3befa-ac54-4ce7-a22e-1a65945e3251",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "8cebea37-0080-4a6b-9611-eec757615e07",
+        "Errors": [
+          {
+            "NextAction": "8cebea37-0080-4a6b-9611-eec757615e07",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.intentos_fallidos"
+      },
+      "Identifier": "e1000000-0000-4000-8000-000000000001",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "e1000000-0000-4000-8000-000000000002",
+        "Conditions": [
+          {
+            "NextAction": "74a3befa-ac54-4ce7-a22e-1a65945e3251",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "e1000000-0000-4000-8000-000000000002",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "¿Algo más en lo que pueda ayudarte?",
+        "LexV2Bot": {
+          "AliasArn": "<ARN_DEL_ALIAS_DEL_BOT>"
+        }
+      },
+      "Identifier": "8339c1eb-e2df-4b86-941b-1014b86876a6",
+      "Type": "ConnectParticipantWithLexBot",
+      "Transitions": {
+        "NextAction": "74a3befa-ac54-4ce7-a22e-1a65945e3251",
+        "Conditions": [
+          {
+            "NextAction": "a1000000-0000-4000-8000-000000000001",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "AgendarCitaIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "a1000000-0000-4000-8000-000000000001",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "ConsultarCitaIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "a1000000-0000-4000-8000-000000000001",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "CancelarCitaIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "d975869a-9891-4dc5-be4a-0dd783d742eb",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "DespedidaIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "a1000000-0000-4000-8000-000000000001",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "ConsultarDisponibilidadIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "a1000000-0000-4000-8000-000000000001",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "ReagendarCitaIntent"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "e1000000-0000-4000-8000-000000000001",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "74a3befa-ac54-4ce7-a22e-1a65945e3251",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "es_inicio": "NO"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "b9f697e9-7ff9-4ac2-bc9e-883fed87be12",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "d1000000-0000-4000-8000-000000000001",
+        "Errors": [
+          {
+            "NextAction": "d1000000-0000-4000-8000-000000000001",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.es_inicio"
+      },
+      "Identifier": "509947cb-00a4-4c5a-bc3a-4632a15cc4f7",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "8339c1eb-e2df-4b86-941b-1014b86876a6",
+        "Conditions": [
+          {
+            "NextAction": "d95539ea-6bce-4967-8589-7659fa26a3f0",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "SI"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "8339c1eb-e2df-4b86-941b-1014b86876a6",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "¡Hola! Soy el asistente de citas médicas. Puedo agendar, consultar, cancelar o reagendar tu cita, y ver horarios disponibles."
+      },
+      "Identifier": "d95539ea-6bce-4967-8589-7659fa26a3f0",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "b9f697e9-7ff9-4ac2-bc9e-883fed87be12",
+        "Errors": [
+          {
+            "NextAction": "b9f697e9-7ff9-4ac2-bc9e-883fed87be12",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -5,7 +5,7 @@
 En esta versión, un bot de Amazon Lex V2 detecta qué quiere el cliente (intent), recoge los datos que faltan (slots) y llama a una función Lambda para ejecutar la operación sobre DynamoDB.
 
 <div align="center">
-<img src="assets/arquitectura-bot.png" alt="Arquitectura de la versión con intents" width="100%" />
+<img src="../docs/assets/arquitectura-bot.png" alt="Arquitectura de la versión con intents" width="100%" />
 </div>
 
 ## Cómo funciona
@@ -19,39 +19,23 @@ En esta versión, un bot de Amazon Lex V2 detecta qué quiere el cliente (intent
 
 1. Crea las tablas de DynamoDB: [tablas-dynamodb.md](../docs/tablas-dynamodb.md).
 2. Crea la función Lambda con el código de esta carpeta (ver la sección "La Lambda" más abajo).
-3. Crea el bot de Lex con los intents y slots de la siguiente sección y asigna la Lambda como fulfillment.
-4. Conecta el bot a Amazon Connect (ver "Cómo conectarlo a Amazon Connect").
-5. Si algo falla, revisa [troubleshooting](../docs/troubleshooting.md).
+3. Configura el bot de Lex y conéctalo a Amazon Connect: [setup-lex.md](../docs/setup-lex.md).
+4. Si algo falla, revisa [troubleshooting](../docs/troubleshooting.md).
 
 ## Intents y slots
 
 | Intent | Qué hace | Slots que usa |
 |---|---|---|
-| `AgendarCitaIntent` | Agenda una cita | `documento`, `especialidad`, `fecha`, `hora`, `paciente` |
+| `AgendarCitaIntent` | Agenda una cita | `documento`, `paciente` `especialidad`, `fecha`, `hora` |
 | `ConsultarCitaIntent` | Consulta la cita de un paciente | `documento` |
 | `CancelarCitaIntent` | Cancela una cita | `codigo_cita` |
 | `ConsultarDisponibilidadIntent` | Muestra horarios libres | `especialidad`, `fecha` |
 | `ReagendarCitaIntent` | Cambia fecha y hora de una cita | `codigo_cita`, `fecha`, `hora` |
+| `DespedidaIntent` | Despide al paciente; no usa la Lambda, el flujo de Connect envía el mensaje y termina | ninguno |
 
 Los nombres de intents y slots son los que la Lambda espera. Si los cambias en Lex, cámbialos también en el código.
 
-### Capturas de la configuración
-
-![Lista de bots de Lex](assets/lex-bots.png)
-
-*Bots creados en Amazon Lex V2.*
-
-![Intents del bot de citas](assets/lex-intents.png)
-
-*Los cinco intents del bot.*
-
-![Slots del intent de agendar](assets/lex-slots-agendar.png)
-
-*Slots del intent `AgendarCitaIntent`.*
-
-![Fulfillment con Lambda](assets/lex-fulfillment.png)
-
-*Conexión del bot con la función Lambda.*
+La configuración paso a paso, con capturas, está en [setup-lex.md](../docs/setup-lex.md).
 
 ## La Lambda
 
@@ -76,27 +60,31 @@ El mismo mensaje inicial se probó en las dos versiones:
 
 > Hola, quiero agendar una cita a mi nombre soy la paciente Sol, es urgente la necesito para hoy mismo.
 
-![Conversación con el bot de Lex](assets/chat-lex.png)
+![Conversación con el bot de Lex](../docs/assets/conversacion-bot.png)
 
 Con esta configuración, el bot pide cada dato con su frase fija (documento, nombre del paciente) y no interpreta el mensaje libre como lo hace el agente: aunque el cliente ya haya dicho su nombre, el bot volvió a preguntarlo. Es un comportamiento de esta configuración y de sus reintentos, no una limitación general de Lex.
 
 ## Cómo conectarlo a Amazon Connect
 
-El bot de Lex no atiende solo: se usa dentro de un flujo de contacto de Amazon Connect, igual que en la versión con agente.
+El bot de Lex no atiende solo: se usa dentro de un flujo de contacto de Amazon Connect, igual que en la versión con agente. A diferencia de esa versión, el flujo no lleva el bloque Connect assistant ni el atributo de sesión con el ARN del agente. Los pasos están en [setup-lex.md](../docs/setup-lex.md).
 
-1. Construye el bot (**Build**) y crea un alias.
-2. En el idioma del alias, asigna la Lambda como fulfillment.
-3. Asegúrate de que el bot esté habilitado para tu instancia de Amazon Connect, en la configuración de la instancia (sección de Amazon Lex).
-4. Crea un flujo de contacto (**Flows → Create flow**) con esta secuencia:
-   - **Set logging behavior** (Enabled).
-   - Un mensaje de bienvenida.
-   - **Get customer input**, seleccionando este bot y su alias.
-   - **Disconnect** al final de todos los caminos.
-5. Guarda, publica el flujo y pruébalo con **Test chat**.
+## El flujo de contacto
 
-A diferencia de la versión con agente, este flujo no lleva el bloque **Connect assistant** ni el atributo de sesión con el ARN del agente, porque no usa Amazon Q in Connect.
+El flujo de Amazon Connect (`CitasMedicas-LexBot`) hace más que conectar el chat con el bot:
 
-Ajusta estos pasos a como armaste tu flujo.
+- Da la bienvenida una sola vez y después pregunta "¿Algo más en lo que pueda ayudarte?" tras cada operación.
+- Cuando Lex detecta `DespedidaIntent`, envía un mensaje de despedida y termina la conversación.
+- Si Lex no reconoce ningún intent, avisa y vuelve a preguntar una vez; si vuelve a fallar, avisa del problema y desconecta.
+
+## Archivos exportados
+
+La carpeta [`exportados/`](exportados/) incluye el flujo de contacto de Amazon Connect de esta versión en formato JSON, como referencia o para importarlo desde la consola de Connect.
+
+| Archivo | Qué es |
+|---|---|
+| [`flow-principal-lex.json`](exportados/flow-principal-lex.json) | El Contact Flow que conecta el chat con el bot de Lex |
+
+Los identificadores de cuenta, instancia, Lambda, bot y agente fueron reemplazados por marcadores (por ejemplo `<ARN_DE_LA_LAMBDA>`). Importar un flujo no recrea esos recursos: después de importarlo, vuelve a seleccionar tu propia Lambda y tu bot.
 
 ## Limitaciones de esta versión
 
